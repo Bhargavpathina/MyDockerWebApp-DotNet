@@ -1,0 +1,30 @@
+apiVersion:  apps/v1
+kind: Deployment
+metadata: 
+  name: mydockerwebapp-deployment
+  lables:
+    app: mydockerwebapp
+spec:
+ replicas: 1
+ selector:
+   matchLabels:
+     app: mydockerwebapp
+  template:
+    metadata:
+      labels:
+        app: mydockerwebapp
+    spec:
+      containers:
+      - name: mydockerwebapp-container
+        image: primarkcontainer.azurecr.io/mydockerwebappdotnet:latest # <--- IMPORTANT: Replace with your actual ACR login server
+        ports:
+        - containerPort: 80 # Your .NET app listens on port 80 (from Dockerfile EXPOSE 80)
+        resources: # Basic resource limits (good practice)
+          requests:
+            memory: "64Mi"
+            cpu: "50m"
+          limits:
+            memory: "128Mi"
+            cpu: "100m"
+      imagePullSecrets: # This is technically not needed if ACR is integrated with AKS, but good to know
+      - name: acr-secret # This secret will be created by Azure DevOps
